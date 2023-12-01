@@ -1,16 +1,20 @@
-# This is a sample Python script.
+import sys
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from PySide6.QtWidgets import QApplication
 
+from ui.UI import UI
+from utils.Log import Log
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+u_name = "Name"
+window = None
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    Log().sendInfo("Launching the program...")
+    Log().sendInfo("Uploading data...")
+    #TODO
+    Log().sendInfo("Launching the window...")
+    app = QApplication(sys.argv)
+    window = UI(u_name)
+    window.show()
+    Log().sendInfo("The program was successfully launched!")
+    sys.exit(app.exec())
