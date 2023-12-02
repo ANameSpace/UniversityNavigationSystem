@@ -1,5 +1,6 @@
 import datetime
 import os
+import zipfile
 from enum import Enum
 
 
@@ -64,7 +65,7 @@ class Log:
     def __init__(self):
         if not Log._init_already:
             self.current_directory = os.getcwd()
-            self.logs_directory = os.path.join(self.current_directory, "logs")
+            self.logs_directory = os.path.join(self.current_directory, "data", "logs")
             if not os.path.exists(self.logs_directory):
                 os.makedirs(self.logs_directory)
             self.log_file = os.path.join(self.logs_directory, self._generate_file_name())
@@ -79,8 +80,22 @@ class Log:
         today = datetime.date.today()
         count = 1
         file_name = f"{today}_{count}.txt"
+
+        # Archiving of old log files
+        old_files = [f for f in os.listdir(self.logs_directory) if f.endswith('.txt')]
+        for old_file in old_files:
+            txt_filename = os.path.join(self.logs_directory, old_file)
+            zip_filename = os.path.join(self.logs_directory, f'{os.path.splitext(old_file)[0]}.zip')
+            # create zip
+            with zipfile.ZipFile(zip_filename, 'w') as zipf:
+                zipf.write(txt_filename, os.path.basename(txt_filename))
+                try:
+                    os.remove(os.path.join(self.logs_directory, txt_filename))
+                except OSError as e:
+                    print("Error: %s - %s." % (e.filename, e.strerror))
+
         # Searching for today's latest log file
-        while os.path.exists(os.path.join(self.logs_directory, file_name)):
+        while os.path.exists(os.path.join(self.logs_directory, f"{today}_{count}.zip")):
             count += 1
             file_name = f"{today}_{count}.txt"
         # Return
@@ -101,7 +116,7 @@ class Log:
            :param str msg: Message text
         """
         print(Style.TEXT_GREY + "[" + log_type.value + Style.TEXT_GREY + "]" + Style.TEXT_WHITE + " " + str(msg) + Style.FORMAT_RESET)
-        self.write_to_file("[" + log_type.name + "]" + msg)
+        self.write_to_file("[" + log_type.name + "] " + msg)
 
     def write_to_file(self, msg: str):
         """

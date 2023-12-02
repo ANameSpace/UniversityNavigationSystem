@@ -1,6 +1,6 @@
 import time
 
-from utils.Log import Log
+from utils.tools.Log import Log
 
 last_time = time.time()
 

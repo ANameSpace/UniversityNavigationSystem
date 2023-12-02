@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt, QTime, QSize, QTimer
 
 from ui import AFK
 from utils import Data
-from utils.Log import Log
+from utils.tools.Log import Log
 
 
 class UI(QMainWindow):

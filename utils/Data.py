@@ -1,6 +1,6 @@
 from PySide6.QtGui import QColor
 
-from utils.Log import Log
+from utils.tools.Log import Log
 
 walls = [
     (0, 0, 0, 40),
