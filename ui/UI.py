@@ -34,7 +34,7 @@ class UI(QMainWindow):
         self.setMinimumSize(800, 370 + Data.get_floors_num() * 50)
         self.img = QtGui.QPixmap("./resources/icons/icon.png")
         if self.img.isNull():
-            Log().sendError("Failed to load ./resources/icons/icon.png")
+            Log().send(Log.LogType.ERROR, "Failed to load ./resources/icons/icon.png")
         self.setWindowIcon(self.img)
         self.setIconSize(QSize(100, 100))
 
@@ -59,12 +59,12 @@ class UI(QMainWindow):
         self.clear_btn.setStyleSheet("background-color: rgb(235, 35, 48); border-radius: 10px;")
         self.img = QtGui.QPixmap("./resources/icons/close.png")
         if self.img.isNull():
-            Log().sendError("Failed to load ./resources/icons/close.png")
+            Log().send(Log.LogType.ERROR, "Failed to load ./resources/icons/close.png")
         self.clear_btn.setIcon(self.img)
         self.clear_btn.setIconSize(QSize(50, 50))
         self.clear_btn.clicked.connect(lambda: self.input_field.clear())
         self.clear_btn.clicked.connect(lambda: self.use(True))
-        self.clear_btn.clicked.connect(lambda: Log().sendInfo("Button CLEAR_BTN was pressed"))
+        self.clear_btn.clicked.connect(lambda: Log().send(Log.LogType.INFO, "Button CLEAR_BTN was pressed"))
 
         # find button
         self.find_btn = QPushButton(self)
@@ -72,11 +72,11 @@ class UI(QMainWindow):
         self.find_btn.setStyleSheet("background-color: rgb(35, 92, 235); border-radius: 10px;")
         self.img = QtGui.QPixmap("./resources/icons/find.png")
         if self.img.isNull():
-            Log().sendError("Failed to load ./resources/icons/find.png")
+            Log().send(Log.LogType.ERROR, "Failed to load ./resources/icons/find.png")
         self.find_btn.setIcon(self.img)
         self.find_btn.setIconSize(QSize(36, 36))
         self.find_btn.clicked.connect(lambda: self.use(False))
-        self.find_btn.clicked.connect(lambda: Log().sendInfo("Button FIND_BTN was pressed"))
+        self.find_btn.clicked.connect(lambda: Log().send(Log.LogType.INFO, "Button FIND_BTN was pressed"))
 
         # floors frame
         self.floors_frame = QFrame(self)
@@ -153,7 +153,7 @@ class UI(QMainWindow):
         self.vbox = QVBoxLayout()
         for i in range(1, 100):
             # TODO text
-            object = QLabel("TextLabel")
+            object = QLabel("тут будет текст")
             self.vbox.addWidget(object)
         self.frame_scroll_widget.setStyleSheet("border: 0px; border-radius: 0px;")
         self.frame_scroll_widget.setLayout(self.vbox)
@@ -357,7 +357,7 @@ class UI(QMainWindow):
             if self.floors_frame.underMouse():
                 for b in self.floor_btns:
                     if b.underMouse():
-                        Log().sendInfo("Button FLOOR_" + b.text() + "_BTN was pressed")
+                        Log().send(Log.LogType.INFO, "Button FLOOR_" + b.text() + "_BTN was pressed")
                         self.set_floor(b.text())
                         continue
             # set origin point

@@ -33,7 +33,7 @@ names_list = [item[0] for item in rooms]
 
 def is_valid_name(s):
     res = names_list.count(str(s).lower()) > 0
-    Log().sendInfo("text = \"" + str(s).lower() + "\", res = " + str(res))
+    Log().send(Log.LogType.INFO, "text = \"" + str(s).lower() + "\", res = " + str(res))
     return res
 
 
