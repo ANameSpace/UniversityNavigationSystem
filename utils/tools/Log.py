@@ -2,55 +2,7 @@ import datetime
 import os
 import zipfile
 from enum import Enum
-
-
-class Style:
-    """
-        Text styles for the console
-    """
-    FORMAT_RESET = '\33[0m'
-    FORMAT_BOLD = '\33[1m'
-    FORMAT_ITALIC = '\33[3m'
-    FORMAT_URL = '\33[4m'
-    FORMAT_BLINK = '\33[5m'
-    FORMAT_BLINK2 = '\33[6m'
-    FORMAT_SELECTED = '\33[7m'
-
-    TEXT_BLACK = '\33[30m'
-    TEXT_RED = '\33[31m'
-    TEXT_GREEN = '\33[32m'
-    TEXT_YELLOW = '\33[33m'
-    TEXT_BLUE = '\33[34m'
-    TEXT_VIOLET = '\33[35m'
-    TEXT_BEIGE = '\33[36m'
-    TEXT_WHITE = '\33[37m'
-
-    BG_BLACK = '\33[40m'
-    BG_RED = '\33[41m'
-    BG_GREEN = '\33[42m'
-    BG_YELLOW = '\33[43m'
-    BG_BLUE = '\33[44m'
-    BG_VIOLET = '\33[45m'
-    BG_BEIGE = '\33[46m'
-    BG_WHITE = '\33[47m'
-
-    TEXT_GREY = '\33[90m'
-    TEXT_RED2 = '\33[91m'
-    TEXT_GREEN2 = '\33[92m'
-    TEXT_YELLOW2 = '\33[93m'
-    TEXT_BLUE2 = '\33[94m'
-    TEXT_VIOLET2 = '\33[95m'
-    TEXT_BEIGE2 = '\33[96m'
-    TEXT_WHITE2 = '\33[97m'
-
-    BG_GREY = '\33[100m'
-    BG_RED2 = '\33[101m'
-    BG_GREEN2 = '\33[102m'
-    BG_YELLOW2 = '\33[103m'
-    BG_BLUE2 = '\33[104m'
-    BG_VIOLET2 = '\33[105m'
-    BG_BEIGE2 = '\33[106m'
-    BG_WHITE2 = '\33[107m'
+from colorama import Fore
 
 
 class Log:
@@ -65,7 +17,7 @@ class Log:
     def __init__(self):
         if not Log._init_already:
             self.current_directory = os.getcwd()
-            self.logs_directory = os.path.join(self.current_directory, "data", "logs")
+            self.logs_directory = os.path.join(self.current_directory, "UniversityNavigationSystem", "logs")
             if not os.path.exists(self.logs_directory):
                 os.makedirs(self.logs_directory)
             self.log_file = os.path.join(self.logs_directory, self._generate_file_name())
@@ -90,9 +42,25 @@ class Log:
             with zipfile.ZipFile(zip_filename, 'w') as zipf:
                 zipf.write(txt_filename, os.path.basename(txt_filename))
                 try:
-                    os.remove(os.path.join(self.logs_directory, txt_filename))
+                    os.remove(txt_filename)
                 except OSError as e:
                     print("Error: %s - %s." % (e.filename, e.strerror))
+
+        # Clear old logs files
+        old_files = sorted([os.path.join(self.logs_directory, f) for f in os.listdir(self.logs_directory) if f.endswith('.zip')], key=os.path.getctime)
+        deleted = 0
+        for deleted_files in old_files:
+            if len(old_files) <= 5:
+                continue
+            if deleted_files.count(str(today)) == 1:
+                continue
+            if len(old_files) - deleted <= 5:
+                continue
+            try:
+                os.remove(deleted_files)
+            except OSError as e:
+                print("Error: %s - %s." % (e.filename, e.strerror))
+            deleted += 1
 
         # Searching for today's latest log file
         while os.path.exists(os.path.join(self.logs_directory, f"{today}_{count}.zip")):
@@ -105,9 +73,9 @@ class Log:
         """
             Types of log messages
         """
-        INFO = str(Style.TEXT_BLUE + "INFO")
-        WARNING = str(Style.TEXT_YELLOW + "WARNING")
-        ERROR = str(Style.TEXT_RED + "ERROR")
+        INFO = str(Fore.BLUE + "INFO")
+        WARNING = str(Fore.YELLOW + "WARNING")
+        ERROR = str(Fore.RED + "ERROR")
 
     def send(self, log_type: LogType, msg: str):
         """
@@ -115,7 +83,7 @@ class Log:
            :param LogType log_type: Message type
            :param str msg: Message text
         """
-        print(Style.TEXT_GREY + "[" + log_type.value + Style.TEXT_GREY + "]" + Style.TEXT_WHITE + " " + str(msg) + Style.FORMAT_RESET)
+        print(Fore.LIGHTWHITE_EX + "[" + log_type.value + Fore.LIGHTWHITE_EX + "]" + Fore.WHITE + " " + str(msg) + Fore.RESET)
         self.write_to_file("[" + log_type.name + "] " + msg)
 
     def write_to_file(self, msg: str):

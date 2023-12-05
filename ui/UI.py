@@ -2,6 +2,7 @@ from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtGui import QPainter, QBrush, QFont, QColor, QPen
 from PySide6.QtWidgets import QMainWindow, QPushButton, QLineEdit, QLabel, QFrame, QScrollArea, QVBoxLayout, QWidget, QGridLayout
 from PySide6.QtCore import Qt, QTime, QSize, QTimer
+import os
 
 from ui import AFK
 from utils import Data
@@ -57,7 +58,8 @@ class UI(QMainWindow):
         self.clear_btn.setEnabled(False)
         self.clear_btn.setGeometry(7, 7, 50, 50)
         self.clear_btn.setStyleSheet("background-color: rgb(235, 35, 48); border-radius: 10px;")
-        self.img = QtGui.QPixmap("./resources/icons/close.png")
+        self.img = QtGui.QPixmap("resources\icons\close.png")
+        print(os.path.join(os.getcwd(), "resources", "icons", "close.png"))
         if self.img.isNull():
             Log().send(Log.LogType.ERROR, "Failed to load ./resources/icons/close.png")
         self.clear_btn.setIcon(self.img)

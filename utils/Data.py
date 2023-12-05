@@ -1,4 +1,7 @@
+import json
+
 from PySide6.QtGui import QColor
+import os
 
 from utils.tools.Log import Log
 
@@ -71,3 +74,48 @@ def get_ladders(floor):
 
 def get_rooms_list(floor):
     return rooms
+
+
+class Data:
+    _instance = None
+    _init_already = False
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
+    def __init__(self):
+        if not Data._init_already:
+            self.current_directory = os.getcwd()
+            self.data_directory = os.path.join(self.current_directory, "UniversityNavigationSystem")
+            self.data_file = os.path.join(self.data_directory, "map.json")
+            self._generate_file()
+            Data._init_already = True
+
+    def _generate_file(self):
+        """
+           Load map.json file (PROTECTED)
+        """
+        # Searching for today's latest log file
+        if os.path.exists(self.data_file):
+            with open(self.data_file, 'r') as file:
+                self.data = json.load(file)
+        else:
+            Log().send(Log.LogType.ERROR, "File map.json was not found! Creating a new file.")
+            with open(self.data_file, 'w') as file:
+                default_data = """
+                {
+                	"size": "Medium",
+                	"price": 15.67,
+                	"toppings": ["Mushrooms", "Extra Cheese", "Pepperoni", "Basil"],
+                	"client": {
+                		"name": "Jane Doe",
+                		"phone": "455-344-234",
+                		"email": "janedoe@email.com"
+                	}
+                }
+                """
+                self.data = json.loads(default_data)
+                json.dump(self.data, file, ensure_ascii=False, indent=4, sort_keys=True)
+
