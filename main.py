@@ -39,7 +39,7 @@ if __name__ == '__main__':
     u_name = "Name"
     try:
         app = QApplication(sys.argv)
-        window = UI(u_name)
+        window = UI(Data().get_name())
         window.show()
     except:
         Log().send(Log.LogType.ERROR, "The window could not be created!")

@@ -5,8 +5,9 @@ from PySide6.QtCore import Qt, QTime, QSize, QTimer
 import os
 
 from ui import AFK
-from utils import Data
+
 from utils.tools.Log import Log
+from utils.Data import Data
 
 
 class UI(QMainWindow):
@@ -23,7 +24,7 @@ class UI(QMainWindow):
         self.offset = QtCore.QPoint(60, 60)
 
         # navigation
-        self.current_floor = Data.get_default_floor()
+        self.current_floor = Data().get_default_floor()
         self.has_result = False
         self.route_ladders = []
         self.route_segments = []
@@ -32,7 +33,7 @@ class UI(QMainWindow):
         self.setWindowTitle(str_name)
         self.setStyleSheet("background-color: rgb(240, 240, 240);")
         self.setGeometry(100, 100, 300, 500)
-        self.setMinimumSize(800, 370 + Data.get_floors_num() * 50)
+        self.setMinimumSize(800, 370 + Data().get_floors_count() * 50)
         self.img = QtGui.QPixmap("./resources/icons/icon.png")
         if self.img.isNull():
             Log().send(Log.LogType.ERROR, "Failed to load ./resources/icons/icon.png")
@@ -49,7 +50,7 @@ class UI(QMainWindow):
         self.input_field.setGeometry(60, 7, self.width() - 60 * 2, 50)
         self.input_field.setFont(QFont("Arial", 16, weight=QFont.Bold))
         self.input_field.setStyleSheet("background-color: white; border-radius: 10px; border: 2px solid black;")
-        self.completer = QtWidgets.QCompleter(Data.get_names_list())
+        self.completer = QtWidgets.QCompleter(Data().get_rooms_names())
         self.completer.popup().setStyleSheet("font-size: 16px;")
         self.input_field.setCompleter(self.completer)
 
@@ -59,7 +60,7 @@ class UI(QMainWindow):
         self.clear_btn.setGeometry(7, 7, 50, 50)
         self.clear_btn.setStyleSheet("background-color: rgb(235, 35, 48); border-radius: 10px;")
         self.img = QtGui.QPixmap("resources\icons\close.png")
-        print(os.path.join(os.getcwd(), "resources", "icons", "close.png"))
+        # print(os.path.join(os.getcwd(), "resources", "icons", "close.png"))
         if self.img.isNull():
             Log().send(Log.LogType.ERROR, "Failed to load ./resources/icons/close.png")
         self.clear_btn.setIcon(self.img)
@@ -83,10 +84,10 @@ class UI(QMainWindow):
         # floors frame
         self.floors_frame = QFrame(self)
         self.floors_frame.setStyleSheet("background-color: white; border-radius: 10px; border: 2px solid black;")
-        self.floors_frame.setGeometry(7, self.height() - 30 - 50 * Data.get_floors_num(), 50, 50 * Data.get_floors_num())
+        self.floors_frame.setGeometry(7, self.height() - 30 - 50 * Data().get_floors_count(), 50, 50 * Data().get_floors_count())
         self.floors_layout = QGridLayout(self.floors_frame)
         row = 0
-        for name in Data.get_floors():
+        for name in Data().get_floors():
             self.button = QLabel(str(name))
             self.button.setFixedSize(30, 30)
             self.button.setFont(QFont("Arial", 16, weight=QFont.Bold))
@@ -197,7 +198,7 @@ class UI(QMainWindow):
         else:
             self.name_label.setVisible(False)
             self.input_field.setEnabled(False)
-            self.has_result = Data.is_valid_name(self.input_field.text())
+            self.has_result = Data().is_valid_name(self.input_field.text())
             self.find_btn.setEnabled(False)
             self.clear_btn.setEnabled(True)
             self.info_frame.setVisible(True)
@@ -214,7 +215,7 @@ class UI(QMainWindow):
 
     def afk_close(self):
         self.input_field.clear()
-        self.set_floor(Data.get_default_floor())
+        self.set_floor(Data().get_default_floor())
         self.offset = QtCore.QPoint(60, 60)
         self.zoom_factor = 10.0
         self.use(True)
@@ -226,15 +227,15 @@ class UI(QMainWindow):
             self.info_frame.setGeometry(self.width() - self.width() // 2, 60, self.width() // 2, self.height() - 60)
             self.time_label.setVisible(True)
             # floors
-            self.floors_frame.setGeometry(7, self.height() - 30 - 50 * Data.get_floors_num(), 50,
-                                          50 * Data.get_floors_num())
+            self.floors_frame.setGeometry(7, self.height() - 30 - 50 * Data().get_floors_count(), 50,
+                                          50 * Data().get_floors_count())
         else:
             # info
             self.info_frame.setGeometry(10, self.height() // 2, self.width() - 20, self.height() // 2)
             self.time_label.setVisible(False)
             # floors
-            self.floors_frame.setGeometry(7, self.height() - self.height() // 2 - 50 * Data.get_floors_num(), 50,
-                                          50 * Data.get_floors_num())
+            self.floors_frame.setGeometry(7, self.height() - self.height() // 2 - 50 * Data().get_floors_count(), 50,
+                                          50 * Data().get_floors_count())
         # content
         if self.has_result:
             self.frame_scroll_area.setGeometry(0, 0, self.info_frame.width(), self.info_frame.height())
@@ -248,7 +249,7 @@ class UI(QMainWindow):
         painter = QPainter(self)
         painter.setPen(QPen(QColor(0, 0, 0), 2))
 
-        for wall in Data.get_walls(self.current_floor):
+        for wall in Data().get_walls(self.current_floor):
             x1, y1, x2, y2 = wall
             scaled_x1 = x1 * self.zoom_factor + self.offset.x()
             scaled_y1 = y1 * self.zoom_factor + self.offset.y()
@@ -257,7 +258,7 @@ class UI(QMainWindow):
             painter.drawLine(scaled_x1, scaled_y1, scaled_x2, scaled_y2)
         painter.setPen(QPen(QColor(0, 0, 0), 1))
 
-        for empty_rooms in Data.get_empty_rooms(self.current_floor):
+        for empty_rooms in Data().get_empty_rooms(self.current_floor):
             x, y, width, height = empty_rooms
             scaled_x = x * self.zoom_factor + self.offset.x()
             scaled_y = y * self.zoom_factor + self.offset.y()
@@ -266,7 +267,7 @@ class UI(QMainWindow):
             painter.setBrush(QBrush(QColor(41, 41, 41)))
             painter.drawRect(scaled_x, scaled_y, scaled_width, scaled_height)
 
-        for ladder in Data.get_ladders(self.current_floor):
+        for ladder in Data().get_ladders(self.current_floor):
             ladder_id, x, y, width, height = ladder
             scaled_x = x * self.zoom_factor + self.offset.x()
             scaled_y = y * self.zoom_factor + self.offset.y()
@@ -281,7 +282,7 @@ class UI(QMainWindow):
                 painter.setBrush(QBrush(QColor(194, 207, 58)))
             painter.drawRect(scaled_x, scaled_y, scaled_width, scaled_height)
 
-        for room in Data.get_rooms_list(self.current_floor):
+        for room in Data().get_rooms(self.current_floor):
             name, x, y, width, height, x222 = room
             scaled_x = x * self.zoom_factor + self.offset.x()
             scaled_y = y * self.zoom_factor + self.offset.y()
@@ -296,8 +297,8 @@ class UI(QMainWindow):
                 painter.setBrush(QBrush(QColor(62, 127, 201)))
             painter.drawRect(scaled_x, scaled_y, scaled_width, scaled_height)
 
-        if str(self.current_floor) == str(Data.get_default_floor()):
-            point_id, x, y, r = Data.get_you_pos()
+        if str(self.current_floor) == str(Data().get_default_floor()):
+            point_id, r, x, y = Data().get_you_pos()
             scaled_x = x * self.zoom_factor + self.offset.x()
             scaled_y = y * self.zoom_factor + self.offset.y()
             scaled_r = r * self.zoom_factor
@@ -329,8 +330,8 @@ class UI(QMainWindow):
         if self.info_frame.isVisible():
             self.resize_frame()
         else:
-            self.floors_frame.setGeometry(7, self.height() - 30 - 50 * Data.get_floors_num(), 50,
-                                          50 * Data.get_floors_num())
+            self.floors_frame.setGeometry(7, self.height() - 30 - 50 * Data().get_floors_count(), 50,
+                                          50 * Data().get_floors_count())
 
     def wheelEvent(self, event):
         AFK.action()
@@ -347,6 +348,7 @@ class UI(QMainWindow):
             self.zoom_factor += zoom_step
         else:
             self.zoom_factor -= zoom_step
+
         if self.zoom_factor < zoom_step:
             self.zoom_factor = zoom_step
 

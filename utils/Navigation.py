@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from utils import Data
+from utils.Data import Data
 
 G = nx.Graph()  # создаём объект графа
 
@@ -50,4 +50,4 @@ class Navigation:
             Navigation._init_already = True
 
     def get_edges(self, end_point):
-        return nx.shortest_path(G, Data.get_you_pos()[0], str(end_point))
+        return nx.shortest_path(G, Data().get_you_pos()[0], str(end_point))

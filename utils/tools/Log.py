@@ -48,19 +48,18 @@ class Log:
 
         # Clear old logs files
         old_files = sorted([os.path.join(self.logs_directory, f) for f in os.listdir(self.logs_directory) if f.endswith('.zip')], key=os.path.getctime)
-        deleted = 0
-        for deleted_files in old_files:
-            if len(old_files) <= 5:
-                continue
-            if deleted_files.count(str(today)) == 1:
-                continue
-            if len(old_files) - deleted <= 5:
-                continue
-            try:
-                os.remove(deleted_files)
-            except OSError as e:
-                print("Error: %s - %s." % (e.filename, e.strerror))
-            deleted += 1
+        if len(old_files) > 5:
+            deleted = 0
+            for deleted_file in old_files:
+                if deleted_file.find(str(today)) != -1:
+                    continue
+                if len(old_files) - deleted <= 5:
+                    continue
+                try:
+                    os.remove(deleted_file)
+                except OSError as e:
+                    print("Error: %s - %s." % (e.filename, e.strerror))
+                deleted += 1
 
         # Searching for today's latest log file
         while os.path.exists(os.path.join(self.logs_directory, f"{today}_{count}.zip")):
