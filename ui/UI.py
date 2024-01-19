@@ -16,7 +16,6 @@ class UI(QMainWindow):
         # temp
         self.origin = None
         self.task_num = 0
-        self.str_name_len = 15 * len(str(str_name)) + 8
         self.floor_btns = []
 
         # zoom
@@ -111,7 +110,8 @@ class UI(QMainWindow):
         self.name_label.setFont(QFont("Arial", 16, weight=QFont.Bold))
         self.name_label.setStyleSheet("color: white; border-radius: 10px; background-color: rgb(49, 51, 56);")
         self.name_label.setAlignment(Qt.AlignTop | Qt.AlignRight)
-        self.name_label.setGeometry(self.width() - (self.str_name_len + 7), 7, self.str_name_len, 25)
+        self.str_name_len = self.name_label.fontMetrics().boundingRect(self.name_label.text()).width() + 15
+        self.name_label.setGeometry(self.width() - self.str_name_len, 7, self.str_name_len, 25)
 
         # info frame
         self.info_frame = QFrame(self)
@@ -268,13 +268,13 @@ class UI(QMainWindow):
             painter.drawRect(scaled_x, scaled_y, scaled_width, scaled_height)
 
         for ladder in Data().get_ladders(self.current_floor):
-            ladder_id, x, y, width, height = ladder
+            x, y, width, height = ladder.getLocation()
             scaled_x = x * self.zoom_factor + self.offset.x()
             scaled_y = y * self.zoom_factor + self.offset.y()
             scaled_width = width * self.zoom_factor
             scaled_height = height * self.zoom_factor
             if self.has_result:
-                if self.route_ladders.count(str(ladder_id)) == 1:
+                if self.route_ladders.count(str("123")) == 1:
                     painter.setBrush(QBrush(QColor(238, 255, 46)))
                 else:
                     painter.setBrush(QBrush(QColor(183, 194, 64)))
@@ -283,13 +283,13 @@ class UI(QMainWindow):
             painter.drawRect(scaled_x, scaled_y, scaled_width, scaled_height)
 
         for room in Data().get_rooms(self.current_floor):
-            name, x, y, width, height, x222 = room
+            x, y, width, height = room.getLocation()
             scaled_x = x * self.zoom_factor + self.offset.x()
             scaled_y = y * self.zoom_factor + self.offset.y()
             scaled_width = width * self.zoom_factor
             scaled_height = height * self.zoom_factor
             if self.has_result:
-                if self.input_field.text() == name:
+                if self.input_field.text() == "1":
                     painter.setBrush(QBrush(QColor(59, 196, 57)))
                 else:
                     painter.setBrush(QBrush(QColor(37, 73, 115)))

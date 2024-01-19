@@ -1,128 +1,92 @@
 import json
 
-from PySide6.QtGui import QColor
+from functools import *
 import os
 import sys
 
+from utils.obj.LadderObj import LadderObj
+from utils.obj.RoomObj import RoomObj
 from utils.tools.Log import Log
-
-walls = [
-    (0, 0, 0, 40),
-    (0, 40, 40, 40)
-]
-
-ladders = [
-    ("l1", 0, 25, 10, 10),
-    ("l2", 0, 80, 50, 60)
-]
-
-erooms = [
-    (0, 0, 1, 2),
-    (-10, 1, 8, 5)
-]
-
-rooms = [
-    ("1.1", 3, 1, 10, 12, QColor(0, 10, 10)),
-    ("1.2", 1, 15, 8, 5, QColor(0, 100, 100)),
-    ("1.3", 1, 20, 8, 5, QColor(0, 100, 100)),
-    ("1.4", 1, 25, 8, 5, QColor(0, 100, 100)),
-    ("1.5", 1, 32, 5, 8, QColor(0, 100, 100)),
-    ("1.6", 6, 32, 5, 8, QColor(0, 100, 100)),
-
-    ("1.7", 13, 1, 10, 12, QColor(0, 25, 10)),
-]
 
 default_data = """
                 {
                     "name": "Example",
                     "default": {
-                        "id": "1",
+                        "id": "MAIN",
                         "floor": "1",
                         "x": "0",
                         "y": "0",
-                        "size": "10"
+                        "size": "5"
                     },
                     "floors": {
                         "1": {
                             "walls": {
                                 "1": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "x2": "0",
-                                    "y2": "10"
+                                    "x1": "-5",
+                                    "y1": "-5",
+                                    "x2": "5",
+                                    "y2": "5"
                                 },
                                 "2": {
                                     "x1": "1",
-                                    "y1": "0",
-                                    "x2": "0",
-                                    "y2": "10"
-                                },
-                                "3": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "x2": "0",
-                                    "y2": "10"
+                                    "y1": "3",
+                                    "x2": "4",
+                                    "y2": "5"
                                 }
                             },
                             "empty_rooms": {
                                 "1": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
-                                    "height": "10"
+                                    "x": "15",
+                                    "y": "15",
+                                    "width": "5",
+                                    "height": "5"
                                 },
                                 "2": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
-                                    "height": "10"
+                                    "x": "20",
+                                    "y": "15",
+                                    "width": "5",
+                                    "height": "5"
                                 }
                             },
                             "ladders": {
                                 "1": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
-                                    "height": "10"
+                                    "x": "20",
+                                    "y": "30",
+                                    "width": "5",
+                                    "height": "5"
                                 },
                                 "2": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
-                                    "height": "10"
+                                    "x": "20",
+                                    "y": "35",
+                                    "width": "5",
+                                    "height": "5"
                                 }
                             },
                             "rooms": {
                                 "1.1": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
-                                    "height": "10"
+                                    "x": "10",
+                                    "y": "0",
+                                    "width": "5",
+                                    "height": "4"
                                 },
                                 "2.1": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
-                                    "height": "10"
+                                    "x": "10",
+                                    "y": "5",
+                                    "width": "4",
+                                    "height": "4"
                                 }
                             }
                         },
                         "2": {
                             "walls": {
                                 "1": {
-                                    "x1": "1",
+                                    "x1": "0",
                                     "y1": "0",
-                                    "x2": "0",
-                                    "y2": "10"
+                                    "x2": "10",
+                                    "y2": "0"
                                 },
                                 "2": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "x2": "0",
-                                    "y2": "10"
-                                },
-                                "3": {
-                                    "x1": "1",
+                                    "x1": "0",
                                     "y1": "0",
                                     "x2": "0",
                                     "y2": "10"
@@ -130,43 +94,43 @@ default_data = """
                             },
                             "empty_rooms": {
                                 "1": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
+                                    "x": "2",
+                                    "y": "2",
+                                    "width": "5",
                                     "height": "10"
                                 },
                                 "2": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
+                                    "x": "9",
+                                    "y": "9",
+                                    "width": "5",
                                     "height": "10"
                                 }
                             },
                             "ladders": {
                                 "1": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
+                                    "x": "-10",
+                                    "y": "0",
+                                    "width": "10",
                                     "height": "10"
                                 },
                                 "2": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
+                                    "x": "-20",
+                                    "y": "0",
+                                    "width": "10",
                                     "height": "10"
                                 }
                             },
                             "rooms": {
                                 "3.1": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
+                                    "x": "20",
+                                    "y": "20",
+                                    "width": "10",
                                     "height": "10"
                                 },
                                 "3.2": {
-                                    "x1": "1",
-                                    "y1": "0",
-                                    "width": "0",
+                                    "x": "20",
+                                    "y": "30",
+                                    "width": "10",
                                     "height": "10"
                                 }
                             }
@@ -191,6 +155,8 @@ class Data:
             self.data_directory = os.path.join(self.current_directory, "UniversityNavigationSystem")
             self.data_file = os.path.join(self.data_directory, "map.json")
             self._generate_file()
+            # Temp
+            self.all_names = None
             Data._init_already = True
 
     def _generate_file(self):
@@ -220,6 +186,7 @@ class Data:
             self.you_pos = ("you_pos", 10, 0, 0)
             self.floors_count = 1
 
+    @lru_cache
     def is_valid_name(self, name: str):
         """
             Checking the existence of a room by its name
@@ -251,6 +218,7 @@ class Data:
         """
         return self.you_pos
 
+    @lru_cache
     def get_floors(self):
         """
             Get a list of names of all floors
@@ -264,8 +232,14 @@ class Data:
             return tuple("1")
 
     def get_floors_count(self):
+        """
+            Get the number of all floors
+            :return: number of all floors
+            :rtype: int
+        """
         return self.floors_count
 
+    @lru_cache
     def get_default_floor(self):
         """
             Get the default floor name.
@@ -275,9 +249,10 @@ class Data:
         try:
             return str(self.data["default"]["floor"])
         except:
-            Log().send(Log.LogType.ERROR, "The section \"default.floors\" could not be loaded!")
+            Log().send(Log.LogType.ERROR, "The section \"default.floor\" could not be loaded!")
             return 1
 
+    @lru_cache
     def get_rooms_names(self):
         """
             Get a list of names of all rooms
@@ -288,20 +263,95 @@ class Data:
             names = []
             for f in list(self.data["floors"].keys()):
                 names += [n for n in self.data["floors"][f]["rooms"]]
-            self.all_names = tuple(names)
+            self.all_names = names
             return tuple(names)
         except:
             Log().send(Log.LogType.ERROR, "The section \"floors.rooms\" could not be loaded!")
             return tuple()
 
-    def get_walls(self, floor: str):
-        return walls
+    @lru_cache
+    def get_walls(self, floor_name: str):
+        """
+            Get a list of walls
+            :param str floor_name: floor name
+            :return: (x1: int, y1: int, x2: int, y2: int)
+            :rtype: list
+        """
+        floor_name = str(floor_name)
+        try:
+            walls = []
+            for f in list(self.data["floors"][floor_name]["walls"].keys()):
+                walls.append(tuple([int(self.data["floors"][floor_name]["walls"][f]["x1"]),
+                                    int(self.data["floors"][floor_name]["walls"][f]["y1"]),
+                                    int(self.data["floors"][floor_name]["walls"][f]["x2"]),
+                                    int(self.data["floors"][floor_name]["walls"][f]["y2"])]))
+            return walls
+        except:
+            Log().send(Log.LogType.ERROR, "The section \"floors." + floor_name + ".walls\" could not be loaded!")
+            return []
 
-    def get_empty_rooms(self, floor: str):
-        return erooms
+    @lru_cache
+    def get_empty_rooms(self, floor_name: str):
+        """
+            Get a list of empty rooms
+            :param str floor_name: floor name
+            :return: (x: int, y: int, width: int, height: int)
+            :rtype: list
+        """
+        floor_name = str(floor_name)
+        try:
+            rooms = []
+            for f in list(self.data["floors"][floor_name]["empty_rooms"].keys()):
+                rooms.append(tuple([int(self.data["floors"][floor_name]["empty_rooms"][f]["x"]),
+                                    int(self.data["floors"][floor_name]["empty_rooms"][f]["y"]),
+                                    int(self.data["floors"][floor_name]["empty_rooms"][f]["width"]),
+                                    int(self.data["floors"][floor_name]["empty_rooms"][f]["height"])]))
+            return rooms
+        except:
+            Log().send(Log.LogType.ERROR, "The section \"floors." + floor_name + ".empty_rooms\" could not be loaded!")
+            return []
 
-    def get_ladders(self, floor: str):
-        return ladders
+    @lru_cache
+    def get_ladders(self, floor_name: str):
+        """
+            Get a list of ladders
+            :param str floor_name: floor name
+            :return: (LadderObj, LadderObj, ...)
+            :rtype: list
+        """
+        floor_name = str(floor_name)
+        try:
+            rooms = []
+            for f in list(self.data["floors"][floor_name]["empty_rooms"].keys()):
+                rooms.append(
+                    LadderObj(str(f),
+                              int(self.data["floors"][floor_name]["empty_rooms"][f]["x"]),
+                              int(self.data["floors"][floor_name]["empty_rooms"][f]["y"]),
+                              int(self.data["floors"][floor_name]["empty_rooms"][f]["width"]),
+                              int(self.data["floors"][floor_name]["empty_rooms"][f]["height"])))
+            return rooms
+        except:
+            Log().send(Log.LogType.ERROR, "The section \"floors." + floor_name + ".empty_rooms\" could not be loaded!")
+            return []
 
-    def get_rooms(self, floor: str):
-        return rooms
+    @lru_cache
+    def get_rooms(self, floor_name: str):
+        """
+            Get a list of rooms
+            :param str floor_name: floor name
+            :return: (RoomObj, RoomObj, ...)
+            :rtype: list
+        """
+        try:
+            rooms = []
+            for f in list(self.data["floors"][floor_name]["rooms"].keys()):
+                rooms.append(
+                    RoomObj(str(f),
+                            int(self.data["floors"][floor_name]["rooms"][f]["x"]),
+                            int(self.data["floors"][floor_name]["rooms"][f]["y"]),
+                            int(self.data["floors"][floor_name]["rooms"][f]["width"]),
+                            int(self.data["floors"][floor_name]["rooms"][f]["height"])))
+            return rooms
+        except:
+            Log().send(Log.LogType.ERROR, "The section \"floors." + floor_name + ".rooms\" could not be loaded!")
+            return []

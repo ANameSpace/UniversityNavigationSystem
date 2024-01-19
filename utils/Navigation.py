@@ -35,19 +35,40 @@ class Navigation:
 
     def __init__(self):
         if not Navigation._init_already:
-            # load file
-            self.current_directory = os.getcwd()
-            self.logs_directory = os.path.join(self.current_directory, "logs")
-            if not os.path.exists(self.logs_directory):
-                os.makedirs(self.logs_directory)
-            self.log_file = os.path.join(self.logs_directory, self.generate_file_name())
+            self.d = Data()
 
-            # add from file
-            G.add_edge("A", "B", weight=2)
-            G.add_edge("B", "C", weight=1)
-            G.add_edge("A", "C", weight=5)
+            self.graph = nx.Graph()
+            self.nodes = []
+            self.edges = []
+
+            # Load floors
+            self.nodes.append(self.d.get_you_pos()[0])
+            for floor in self.d.get_floors():
+                # load rooms
+                for room in self.d.get_rooms(floor):
+                    n = str(floor + ".room." + room.getName())
+
+                    self.nodes.append(n)
+                    self.graph.add_edge(n, room.getCorridor(), weight=1)
+
+                # load ladders
+                for ladder in self.d.get_ladders(floor):
+                    n = str(floor + ".ladder." + ladder.getName())
+                    self.nodes.append(n)
+                    self.graph.add_edge(n, ladder.getCorridor(), weight=1)
+
+                # load corridors
+                for corridor in self.d.get_corridors(floor):
+                    n = str(floor + ".corridor." + corridor.getName())
+                    self.nodes.append(n)
+                    #self.edges.append(tuple(n, ladder.))
+
+            self.graph.add_nodes_from(self.nodes)
+            self.graph.add_edges_from(self.edges)
+
+
 
             Navigation._init_already = True
 
     def get_edges(self, end_point):
-        return nx.shortest_path(G, Data().get_you_pos()[0], str(end_point))
+        return nx.shortest_path(self.graph, self.d.get_you_pos()[0], str(end_point))
