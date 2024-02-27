@@ -3,12 +3,12 @@ import sys
 from PySide6.QtWidgets import QApplication
 import os
 
-from ui.UI import UI
-from utils.Data import Data
-from utils.tools import UpdateChecker
-from utils.tools.Log import Log
+from app.ui.UI import UI
+from app.utils.Data import Data
+from app.utils.tools import UpdateChecker
+from app.utils.tools.Log import Log
 
-APP_VERSION = "0.0.4"
+APP_VERSION = "0.0.7"
 
 
 # BUILD
@@ -19,19 +19,17 @@ if __name__ == '__main__':
     app_directory = os.path.join(os.getcwd(), "UniversityNavigationSystem")
     if not os.path.exists(app_directory):
         os.makedirs(app_directory)
-
     # Init logs system
     log = Log()
     log.send(Log.LogType.INFO, "Launching the program...")
 
     # Checking for updates
     log.send(Log.LogType.INFO, "Checking for updates...")
-    UpdateChecker.check(APP_VERSION)
+    # UpdateChecker.check(APP_VERSION)
 
     # Init data system
     log.send(Log.LogType.INFO, "Uploading data...")
     data = Data()
-    #TODO
 
     # Loading the window
     Log().send(Log.LogType.INFO, "Loading the window...")
@@ -39,7 +37,7 @@ if __name__ == '__main__':
     u_name = "Name"
     try:
         app = QApplication(sys.argv)
-        window = UI(Data().get_name())
+        window = UI(str(Data().get_name() + " | UniversityNavigationSystem"))
         window.show()
     except:
         Log().send(Log.LogType.ERROR, "The window could not be created!")

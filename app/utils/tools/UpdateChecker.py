@@ -1,6 +1,6 @@
 import requests
 
-from utils.tools.Log import Log
+from app.utils.tools.Log import Log
 
 
 def check(ver: str):
